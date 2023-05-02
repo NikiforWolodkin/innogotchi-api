@@ -6,5 +6,6 @@
         public string UserEmail { get; set; }
         public Farm Farm { get; set; }
         public User User { get; set; }
+        public string Status { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace innogotchi_api.Data
         public DbSet<Farm> Farms { get; set; }
         public DbSet<Collaboration> Collaborations { get; set; }
         public DbSet<Innogotchi> Innogotchis { get; set; }
-        public DbSet<FeedingAndQuenching> FeedingAndQuenchings { get; set; }
+        public DbSet<FeedingAndQuenching> FeedingsAndQuenchings { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

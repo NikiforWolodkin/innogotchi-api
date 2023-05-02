@@ -8,7 +8,7 @@ namespace innogotchi_api.Profiles
     {
         public InnogotchiProfile() 
         {
-            CreateMap<Innogotchi, InnogotchiDto>();
+            CreateMap<Innogotchi, InnogotchiResponseDto>();
         }
     }
 }

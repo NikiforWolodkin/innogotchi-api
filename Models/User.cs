@@ -6,9 +6,10 @@ namespace innogotchi_api.Models
     {
         [Key]
         public string Email { get; set; }
+        public string PasswordHash { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public ICollection<Farm> Farms { get; set; }
+        public Farm Farm { get; set; }
         public ICollection<Collaboration> Collaborations { get; set; }
     }
 }

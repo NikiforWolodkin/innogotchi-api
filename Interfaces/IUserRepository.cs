@@ -6,7 +6,9 @@ namespace innogotchi_api.Interfaces
     {
         ICollection<User> GetUsers();
         User GetUser(string email);
-        public bool UserExists(string email);
-        public string GetUserFarmName(User user);
+        bool UserExists(string email);
+        User AddUser(User user);
+        void DeleteUser(User user);
+        void UpdateDatabase();
     }
 }

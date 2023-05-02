@@ -39,13 +39,38 @@ namespace innogotchi_api.Repositories
                 .FirstOrDefault();
         }
 
+        public Innogotchi AddInnogotchi(Innogotchi innogotchi, FeedingAndQuenching feedingAndQuenching, Farm farm)
+        {
+            innogotchi.FeedingAndQuenchings = new List<FeedingAndQuenching>();
+
+            innogotchi.FeedingAndQuenchings.Add(feedingAndQuenching);
+
+            farm.Innogotchis.Add(innogotchi);
+
+            _context.Innogotchis.Add(innogotchi);
+
+            _context.FeedingsAndQuenchings.Add(feedingAndQuenching);
+
+            _context.SaveChanges();
+
+            return GetInnogotchi(innogotchi.Name);
+        }
+
         public bool InnogotchiExists(string name) 
         {
             return _context.Innogotchis.Any(i => i.Name == name);
         }
 
+        /// <summary>
+        /// Checks if innogtchi is dead and sets the death date if it isn't set yet.
+        /// </summary>
         public bool IsInnogotchiDead(Innogotchi innogotchi)
         {
+            if (innogotchi.DeathDate is not null)
+            {
+                return true;
+            }
+
             FeedingAndQuenching innogotchiFeedingAndQuenchingTime =
                 innogotchi.FeedingAndQuenchings
                 .OrderByDescending(f => f.Id)
@@ -63,6 +88,19 @@ namespace innogotchi_api.Repositories
                 return false;
             }
 
+            if (quenchingTimespan < TimeConverter.DEAD_QUENCHING_THRESHOLD)
+            {
+                innogotchi.DeathDate = lastQuenchingTime
+                    .AddDays(TimeConverter.DEAD_QUENCHING_THRESHOLD / TimeConverter.INNOGOTCHI_TIME_MODIFIER);
+            }
+            else
+            {
+                innogotchi.DeathDate = lastFeedingTime
+                    .AddDays(TimeConverter.DEAD_FEEDING_THRESHOLD / TimeConverter.INNOGOTCHI_TIME_MODIFIER);
+            }
+
+            _context.SaveChanges();
+
             return true;
         }
 
@@ -78,18 +116,135 @@ namespace innogotchi_api.Repositories
 
         public int GetInnogotchiHappinessDayCount(Innogotchi innogotchi)
         {
-            throw new NotImplementedException();
+            IList<FeedingAndQuenching> feedingsAndQuenchings = innogotchi.FeedingAndQuenchings
+                .OrderByDescending(f => f.Id)
+                .ToList();
+
+            DateTime lastFeedingTime = feedingsAndQuenchings.First().FeedingTime;
+            DateTime lastQuenchingTime = feedingsAndQuenchings.First().QuenchingTime;
+
+            int feedingTimespan = TimeConverter.ConvertToInnogotchiTime(DateTime.Now - lastFeedingTime);
+            int quenchingTimespan = TimeConverter.ConvertToInnogotchiTime(DateTime.Now - lastQuenchingTime);
+
+            int happyDays = 0;
+
+            if (feedingTimespan >= TimeConverter.NORMAL_FEEDING_THRESHOLD)
+            {
+                feedingTimespan = feedingTimespan - TimeConverter.NORMAL_FEEDING_THRESHOLD;
+            }
+            else
+            {
+                feedingTimespan = 0;
+            }
+            if (quenchingTimespan >= TimeConverter.NORMAL_QUENCHING_THRESHOLD)
+            {
+                quenchingTimespan = quenchingTimespan - TimeConverter.NORMAL_QUENCHING_THRESHOLD;
+            }
+            else
+            {
+                quenchingTimespan = 0;
+            }
+
+            happyDays += (GetInnogotchiAge(innogotchi)
+                - (feedingTimespan > quenchingTimespan ? feedingTimespan : quenchingTimespan))
+                - (int)feedingsAndQuenchings.Select(f => f.UnhappyDays).Sum();
+
+            return happyDays;
         }
 
         public string GetInnogotchiHungerLevel(Innogotchi innogotchi)
         {
-            throw new NotImplementedException();
-        }
+            FeedingAndQuenching innogotchiFeedingAndQuenchingTime =
+                innogotchi.FeedingAndQuenchings
+                .OrderByDescending(f => f.Id)
+                .FirstOrDefault();
 
+            DateTime lastFeedingTime = innogotchiFeedingAndQuenchingTime.FeedingTime;
+
+            int feedingTimespan = TimeConverter.ConvertToInnogotchiTime(DateTime.Now - lastFeedingTime);
+            
+            switch (feedingTimespan)
+            {
+                case < TimeConverter.FULL_FEEDING_THRESHOLD:
+                    return "FULL";
+                case < TimeConverter.NORMAL_FEEDING_THRESHOLD:
+                    return "NORMAL";
+                case < TimeConverter.HUNGER_FEEDING_THRESHOLD:
+                    return "HUNGRY";
+                default:
+                    return "DEAD";
+            }
+        }
 
         public string GetInnogotchiThirstLevel(Innogotchi innogotchi)
         {
-            throw new NotImplementedException();
+            FeedingAndQuenching innogotchiFeedingAndQuenchingTime =
+                innogotchi.FeedingAndQuenchings
+                .OrderByDescending(f => f.Id)
+                .FirstOrDefault();
+
+            DateTime lastQuenchingTime = innogotchiFeedingAndQuenchingTime.QuenchingTime;
+
+            int quenchingTimespan = TimeConverter.ConvertToInnogotchiTime(DateTime.Now - lastQuenchingTime);
+
+            switch (quenchingTimespan)
+            {
+                case < TimeConverter.FULL_QUENCHING_THRESHOLD:
+                    return "FULL";
+                case < TimeConverter.NORMAL_QUENCHING_THRESHOLD:
+                    return "NORMAL";
+                case < TimeConverter.HUNGER_QUENCHING_THRESHOLD:
+                    return "THIRSTY";
+                default:
+                    return "DEAD";
+            }
+        }
+
+        public int GetInnogotchiAverageFeedingPeriod(Innogotchi innogotchi)
+        {
+            IList<FeedingAndQuenching> feedingsAndQuenchings = innogotchi.FeedingAndQuenchings
+                .OrderByDescending(f => f.Id)
+                .ToList();
+
+            DateTime lastFeedingTime = feedingsAndQuenchings.First().FeedingTime;
+
+            int feedingTimespan = TimeConverter.ConvertToInnogotchiTime(DateTime.Now - lastFeedingTime);
+            
+            IList<int> feedingPeriods = feedingsAndQuenchings.Select(f => (int)f.FeedingPeriod).ToList();
+
+            feedingPeriods.Add(feedingTimespan);
+
+            return (int)feedingPeriods.Average();
+        }
+
+        public int GetInnogotchiAverageQuenchingPeriod(Innogotchi innogotchi)
+        {
+            IList<FeedingAndQuenching> feedingsAndQuenchings = innogotchi.FeedingAndQuenchings
+                .OrderByDescending(f => f.Id)
+                .ToList();
+
+            DateTime lastQuenchingTime = feedingsAndQuenchings.First().QuenchingTime;
+
+            int quenchingTimespan = TimeConverter.ConvertToInnogotchiTime(DateTime.Now - lastQuenchingTime);
+
+            IList<int> quenchingPeriods = feedingsAndQuenchings.Select(f => (int)f.FeedingPeriod).ToList();
+
+            quenchingPeriods.Add(quenchingTimespan);
+
+            return (int)quenchingPeriods.Average();
+        }
+
+        public FeedingAndQuenching AddInnogotchiFeedingAndQuenching(Innogotchi innogotchi,FeedingAndQuenching feedingAndQuenching)
+        {
+            innogotchi.FeedingAndQuenchings.Add(feedingAndQuenching);
+
+            _context.FeedingsAndQuenchings.Add(feedingAndQuenching);
+
+            _context.SaveChanges();
+
+            return _context.FeedingsAndQuenchings
+                .Where(f => f.Id == feedingAndQuenching.Id)
+                .FirstOrDefault();
         }
     }
 }

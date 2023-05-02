@@ -2,7 +2,7 @@
 
 namespace innogotchi_api.Dtos
 {
-    public class InnogotchiDto
+    public class InnogotchiResponseDto
     {
         public string Name { get; set; }
         public bool IsDead { get; set; }

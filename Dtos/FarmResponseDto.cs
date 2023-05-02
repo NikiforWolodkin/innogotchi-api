@@ -1,6 +1,6 @@
 ﻿namespace innogotchi_api.Dtos
 {
-    public class FarmDto
+    public class FarmResponseDto
     {
         public string Name { get; set; }
         public int AverageFeedingPeriod { get; set; }

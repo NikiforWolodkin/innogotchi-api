@@ -8,7 +8,7 @@ namespace innogotchi_api.Profiles
     {
         public UserProfile() 
         {
-            CreateMap<User, UserDto>();
+            CreateMap<User, UserResponseDto>();
         }
     }
 }

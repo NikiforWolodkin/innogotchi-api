@@ -6,63 +6,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace innogotchi_api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Email);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Farms",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserEmail = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Farms", x => x.Name);
-                    table.ForeignKey(
-                        name: "FK_Farms_Users_UserEmail",
-                        column: x => x.UserEmail,
-                        principalTable: "Users",
-                        principalColumn: "Email");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Collaborations",
-                columns: table => new
-                {
-                    FarmName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserEmail = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Collaborations", x => new { x.FarmName, x.UserEmail });
-                    table.ForeignKey(
-                        name: "FK_Collaborations_Farms_FarmName",
-                        column: x => x.FarmName,
-                        principalTable: "Farms",
-                        principalColumn: "Name",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Collaborations_Users_UserEmail",
-                        column: x => x.UserEmail,
-                        principalTable: "Users",
-                        principalColumn: "Email",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -85,7 +42,27 @@ namespace innogotchi_api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FeedingAndQuenchings",
+                name: "Users",
+                columns: table => new
+                {
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FarmName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Email);
+                    table.ForeignKey(
+                        name: "FK_Users_Farms_FarmName",
+                        column: x => x.FarmName,
+                        principalTable: "Farms",
+                        principalColumn: "Name");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FeedingsAndQuenchings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -99,12 +76,37 @@ namespace innogotchi_api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FeedingAndQuenchings", x => x.Id);
+                    table.PrimaryKey("PK_FeedingsAndQuenchings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FeedingAndQuenchings_Innogotchis_InnogotchiName",
+                        name: "FK_FeedingsAndQuenchings_Innogotchis_InnogotchiName",
                         column: x => x.InnogotchiName,
                         principalTable: "Innogotchis",
                         principalColumn: "Name");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Collaborations",
+                columns: table => new
+                {
+                    FarmName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserEmail = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Collaborations", x => new { x.FarmName, x.UserEmail });
+                    table.ForeignKey(
+                        name: "FK_Collaborations_Farms_FarmName",
+                        column: x => x.FarmName,
+                        principalTable: "Farms",
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Collaborations_Users_UserEmail",
+                        column: x => x.UserEmail,
+                        principalTable: "Users",
+                        principalColumn: "Email",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -113,18 +115,18 @@ namespace innogotchi_api.Migrations
                 column: "UserEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Farms_UserEmail",
-                table: "Farms",
-                column: "UserEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FeedingAndQuenchings_InnogotchiName",
-                table: "FeedingAndQuenchings",
+                name: "IX_FeedingsAndQuenchings_InnogotchiName",
+                table: "FeedingsAndQuenchings",
                 column: "InnogotchiName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Innogotchis_FarmName",
                 table: "Innogotchis",
+                column: "FarmName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_FarmName",
+                table: "Users",
                 column: "FarmName");
         }
 
@@ -135,16 +137,16 @@ namespace innogotchi_api.Migrations
                 name: "Collaborations");
 
             migrationBuilder.DropTable(
-                name: "FeedingAndQuenchings");
+                name: "FeedingsAndQuenchings");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Innogotchis");
 
             migrationBuilder.DropTable(
                 name: "Farms");
-
-            migrationBuilder.DropTable(
-                name: "Users");
         }
     }
 }

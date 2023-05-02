@@ -1,50 +1,50 @@
 ﻿using innogotchi_api.Data;
 using innogotchi_api.Interfaces;
 using innogotchi_api.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace innogotchi_api.Repositories
 {
     public class FarmRepository : IFarmRepository
     {
         private readonly DataContext _context;
+        private readonly IInnogotchiRepository _innogotchiRepository;
 
-        public FarmRepository(DataContext context)
+        public FarmRepository(DataContext context, IInnogotchiRepository innogotchiRepository)
         {
             _context = context;
+            _innogotchiRepository = innogotchiRepository;
         }
 
         public ICollection<Farm> GetFarms()
         {
-            return _context.Farms.ToList();
-        }
-
-        public ICollection<Farm> GetCollaborationFarms()
-        {
-            var collaborations = _context.Users
-                .Select(u => u.Collaborations)
-                .SelectMany(l => l)
-                .Select(c => c.FarmName)
+            return _context.Farms
+                .Include(f => f.Innogotchis)
+                .ThenInclude(i => i.FeedingAndQuenchings)
                 .ToList();
-
-            return _context.Farms.Where(f => collaborations.Contains(f.Name)).ToList();
         }
 
-        public ICollection<Farm> GetCollaborationFarms(string collaboratorEmail)
+        public ICollection<Farm> GetFarms(string collaboratorEmail)
         {
-            var collaborations = _context.Users
-                .Select(u => u.Collaborations)
-                .SelectMany(l => l)
+            return _context.Collaborations
+                .Include(c => c.Farm)
+                .ThenInclude(f => f.Innogotchis)
+                .ThenInclude(i => i.FeedingAndQuenchings)
+                .Include(c => c.User)
                 .Where(c => c.UserEmail == collaboratorEmail)
-                .Select(c => c.FarmName)
+                .Select(c => c.Farm)
                 .ToList();
-
-            return _context.Farms.Where(f => collaborations.Contains(f.Name)).ToList();
         }
-
 
         public Farm GetFarm(string name)
         {
-            return _context.Farms.Where(f => f.Name == name).FirstOrDefault();
+            return _context.Farms
+                .Include(f => f.Innogotchis)
+                .ThenInclude(i => i.FeedingAndQuenchings)
+                .Include(f => f.Collaborations)
+                .Where(f => f.Name == name)
+                .FirstOrDefault();
         }
 
         public bool FarmExists(string name)
@@ -52,35 +52,130 @@ namespace innogotchi_api.Repositories
             return _context.Farms.Any(f => f.Name == name);
         }
 
-        public int GetFarmAveragePetAge(string name)
+        public Farm AddFarm(User user, Farm farm)
         {
-            throw new NotImplementedException();
+            user.Farm = farm;
+
+            _context.Farms.Add(farm);
+
+            _context.SaveChanges();
+
+            return farm;
         }
 
-        public int GetFarmAlivePetsCount(string name)
+        public void DeleteFarm(Farm farm)
         {
-            throw new NotImplementedException();
+            _context.Farms.Remove(farm);
+
+            _context.SaveChanges();
         }
 
-        public int GetFarmAverageFeedingPeriod(string name)
+        public Collaboration GetFarmCollaboration(string name, string userEmail)
         {
-            throw new NotImplementedException();
+            return _context.Collaborations
+                .Include(c => c.Farm)
+                .Include(c => c.User)
+                .Where(c => c.UserEmail == userEmail && c.FarmName == name)
+                .FirstOrDefault();
         }
 
-        public int GetFarmAverageHappinessDayCount(string name)
+        public bool FarmCollaborationExists(string name, string userEmail)
         {
-            throw new NotImplementedException();
+            return _context.Collaborations
+                .Any(c => c.UserEmail == userEmail && c.FarmName == name);
         }
 
-        public int GetFarmAverageQuenchingPeriod(string name)
+        public Collaboration AddFarmCollaboration(Collaboration collaboration)
         {
-            throw new NotImplementedException();
+            _context.Collaborations.Add(collaboration);
+
+            _context.SaveChanges();
+
+            return GetFarmCollaboration(collaboration.FarmName, collaboration.UserEmail);
         }
 
-        public int GetFarmDeadPetsCount(string name)
+        public void DeleteFarmCollaboration(Collaboration collaboration)
         {
-            throw new NotImplementedException();
+            _context.Collaborations.Remove(collaboration);
+
+            _context.SaveChanges();
         }
 
+        public int GetFarmAveragePetAge(Farm farm)
+        {
+            if (farm.Innogotchis.IsNullOrEmpty())
+            {
+                return -1;
+            }
+
+            return (int)farm.Innogotchis
+                .Select(i => _innogotchiRepository.GetInnogotchiAge(i))
+                .Average();
+        }
+
+        public int GetFarmAlivePetsCount(Farm farm)
+        {
+            if (farm.Innogotchis.IsNullOrEmpty())
+            {
+                return -1;
+            }
+
+            return farm.Innogotchis
+                .Where(i => _innogotchiRepository.IsInnogotchiDead(i) == false)
+                .Count();
+        }
+
+        public int GetFarmDeadPetsCount(Farm farm)
+        {
+            if (farm.Innogotchis.IsNullOrEmpty())
+            {
+                return -1;
+            }
+
+            return farm.Innogotchis
+                .Where(i => _innogotchiRepository.IsInnogotchiDead(i) == true)
+                .Count();
+        }
+
+        public int GetFarmAverageFeedingPeriod(Farm farm)
+        {
+            if (farm.Innogotchis.IsNullOrEmpty())
+            {
+                return -1;
+            }
+
+            return (int)farm.Innogotchis
+                .Select(i => _innogotchiRepository.GetInnogotchiAverageFeedingPeriod(i))
+                .Average();
+        }
+
+        public int GetFarmAverageQuenchingPeriod(Farm farm)
+        {
+            if (farm.Innogotchis.IsNullOrEmpty())
+            {
+                return -1;
+            }
+
+            return (int)farm.Innogotchis
+                .Select(i => _innogotchiRepository.GetInnogotchiAverageQuenchingPeriod(i))
+                .Average();
+        }
+
+        public int GetFarmAverageHappinessDayCount(Farm farm)
+        {
+            if (farm.Innogotchis.IsNullOrEmpty())
+            {
+                return -1;
+            }
+
+            return (int)farm.Innogotchis
+                .Select(i => _innogotchiRepository.GetInnogotchiHappinessDayCount(i))
+                .Average();
+        }
+
+        public void UpdateDatabase()
+        {
+            _context.SaveChanges();
+        }
     }
 }

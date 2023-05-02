@@ -4,11 +4,11 @@ using innogotchi_api.Models;
 
 namespace innogotchi_api.Profiles
 {
-    public class FarmProfile : Profile
+    public class CollaborationProfile : Profile
     {
-        public FarmProfile() 
+        public CollaborationProfile()
         {
-            CreateMap<Farm, FarmResponseDto>();
+            CreateMap<Collaboration, CollaborationDto>();
         }
     }
 }

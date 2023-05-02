@@ -30,6 +30,10 @@ namespace innogotchi_api.Migrations
                     b.Property<string>("UserEmail")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("FarmName", "UserEmail");
 
                     b.HasIndex("UserEmail");
@@ -42,12 +46,7 @@ namespace innogotchi_api.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserEmail")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Name");
-
-                    b.HasIndex("UserEmail");
 
                     b.ToTable("Farms");
                 });
@@ -82,7 +81,7 @@ namespace innogotchi_api.Migrations
 
                     b.HasIndex("InnogotchiName");
 
-                    b.ToTable("FeedingAndQuenchings");
+                    b.ToTable("FeedingsAndQuenchings");
                 });
 
             modelBuilder.Entity("innogotchi_api.Models.Innogotchi", b =>
@@ -111,6 +110,9 @@ namespace innogotchi_api.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("FarmName")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -119,7 +121,13 @@ namespace innogotchi_api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Email");
+
+                    b.HasIndex("FarmName");
 
                     b.ToTable("Users");
                 });
@@ -143,13 +151,6 @@ namespace innogotchi_api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("innogotchi_api.Models.Farm", b =>
-                {
-                    b.HasOne("innogotchi_api.Models.User", null)
-                        .WithMany("Farms")
-                        .HasForeignKey("UserEmail");
-                });
-
             modelBuilder.Entity("innogotchi_api.Models.FeedingAndQuenching", b =>
                 {
                     b.HasOne("innogotchi_api.Models.Innogotchi", null)
@@ -162,6 +163,15 @@ namespace innogotchi_api.Migrations
                     b.HasOne("innogotchi_api.Models.Farm", null)
                         .WithMany("Innogotchis")
                         .HasForeignKey("FarmName");
+                });
+
+            modelBuilder.Entity("innogotchi_api.Models.User", b =>
+                {
+                    b.HasOne("innogotchi_api.Models.Farm", "Farm")
+                        .WithMany()
+                        .HasForeignKey("FarmName");
+
+                    b.Navigation("Farm");
                 });
 
             modelBuilder.Entity("innogotchi_api.Models.Farm", b =>
@@ -179,8 +189,6 @@ namespace innogotchi_api.Migrations
             modelBuilder.Entity("innogotchi_api.Models.User", b =>
                 {
                     b.Navigation("Collaborations");
-
-                    b.Navigation("Farms");
                 });
 #pragma warning restore 612, 618
         }
