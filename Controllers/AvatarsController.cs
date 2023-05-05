@@ -1,5 +1,6 @@
 ﻿using innogotchi_api.Dtos;
 using innogotchi_api.Interfaces;
+using innogotchi_api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace innogotchi_api.Controllers
@@ -23,10 +24,10 @@ namespace innogotchi_api.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(IFormFile))]
+        [ProducesResponseType(200, Type = typeof(FormFile))]
         public IActionResult GetAvatar(int id)
         {
-            if (_avatarAdapter.AvatarExists(id))
+            if (!_avatarAdapter.AvatarExists(id))
             {
                 return NotFound("Avatar not found.");
             }
@@ -35,10 +36,12 @@ namespace innogotchi_api.Controllers
         }
 
         [HttpPost("ids")]
-        [ProducesResponseType(200, Type = typeof(AvatarIdDto))]
+        [ProducesResponseType(201, Type = typeof(AvatarIdDto))]
         public IActionResult AddAvatar(IFormFile image)
         {
-            return Ok(_avatarAdapter.AddAvatar(image));
+            var file = _avatarAdapter.AddAvatar(image);
+
+            return Created($"api/users/{file.Id}", file);
         }
     }
 }

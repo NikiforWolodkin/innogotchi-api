@@ -9,11 +9,13 @@ namespace innogotchi_api.Services
     public class UserAdapter : IUserAdapter
     {
         private readonly IUserRepository _userRepository;
+        private readonly IAvatarRepository _avatarRepository;
         private readonly IMapper _mapper;
 
-        public UserAdapter(IUserRepository userRepository, IMapper mapper)
+        public UserAdapter(IUserRepository userRepository, IAvatarRepository avatarRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _avatarRepository = avatarRepository;
             _mapper = mapper;
         }
 
@@ -75,6 +77,13 @@ namespace innogotchi_api.Services
                 user.LastName = request.LastName;
             if (request.Password is not null)
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            if (request.AvatarId is not null)
+            {
+                if (_avatarRepository.AvatarExists((int)request.AvatarId))
+                {
+                    user.Avatar = _avatarRepository.GetAvatar((int)request.AvatarId);
+                }
+            }
 
             _userRepository.UpdateDatabase();
 

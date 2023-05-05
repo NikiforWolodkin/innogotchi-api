@@ -3,6 +3,7 @@ using innogotchi_api.Dtos;
 using innogotchi_api.Interfaces;
 using innogotchi_api.Models;
 using System.Collections;
+using System.Net.Mime;
 
 namespace innogotchi_api.Adapters
 {
@@ -39,15 +40,26 @@ namespace innogotchi_api.Adapters
             return _avatarRepository.AvatarExists(id);
         }
 
-        public IFormFile GetAvatar(int id)
+        public FormFile GetAvatar(int id)
         {
-            byte[] imageBinary = _avatarRepository.GetAvatar(id).Image; 
+            byte[] byteArray = _avatarRepository.GetAvatar(id).Image;
 
-            var stream = new MemoryStream(imageBinary);
+            using (var stream = new MemoryStream(byteArray))
+            {
+                var file = new FormFile(stream, 0, byteArray.Length, "avatar", "avatar.png")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "image/png",
+                };
 
-            IFormFile file = new FormFile(stream, 0, imageBinary.Length, "name", "fileName");
+                System.Net.Mime.ContentDisposition cd = new System.Net.Mime.ContentDisposition
+                {
+                    FileName = file.FileName
+                };
+                file.ContentDisposition = cd.ToString();
 
-            return file;
+                return file;
+            }
         }
 
         public ICollection<AvatarIdDto> GetAvatarIds()

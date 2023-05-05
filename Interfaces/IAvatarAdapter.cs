@@ -6,7 +6,7 @@ namespace innogotchi_api.Interfaces
     public interface IAvatarAdapter
     {
         ICollection<AvatarIdDto> GetAvatarIds();
-        IFormFile GetAvatar(int id);
+        FormFile GetAvatar(int id);
         bool AvatarExists(int id);
         AvatarIdDto AddAvatar(IFormFile image);
     }
