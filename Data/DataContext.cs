@@ -6,6 +6,7 @@ namespace innogotchi_api.Data
     public class DataContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Avatar> Avatars { get; set; }
         public DbSet<Farm> Farms { get; set; }
         public DbSet<Collaboration> Collaborations { get; set; }
         public DbSet<Innogotchi> Innogotchis { get; set; }

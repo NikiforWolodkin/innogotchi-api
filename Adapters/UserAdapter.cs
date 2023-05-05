@@ -26,6 +26,7 @@ namespace innogotchi_api.Services
             for (int i = 0; i < users.Count(); i++)
             {
                 usersDto[i].FarmName = users[i].Farm?.Name;
+                usersDto[i].AvatarId = users[i].Avatar?.Id;
             }
 
             return usersDto;
@@ -38,6 +39,7 @@ namespace innogotchi_api.Services
             UserResponseDto response = _mapper.Map<UserResponseDto>(user);
 
             response.FarmName = user.Farm?.Name;
+            response.AvatarId = user.Avatar?.Id;
 
             return response;
         }

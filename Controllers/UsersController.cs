@@ -89,7 +89,7 @@ namespace innogotchi_api.Controllers
             return Ok(user);
         }
 
-        [HttpDelete("/me"), Authorize]
+        [HttpDelete("me"), Authorize]
         [ProducesResponseType(204)]
         public IActionResult DeleteUser()
         {

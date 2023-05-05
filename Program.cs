@@ -1,4 +1,5 @@
 using FluentValidation;
+using innogotchi_api.Adapters;
 using innogotchi_api.Data;
 using innogotchi_api.Dtos;
 using innogotchi_api.Interfaces;
@@ -37,10 +38,12 @@ builder.Services.AddScoped<IValidator<UserRequestDto>, UserValidator>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IFarmRepository, FarmRepository>();
 builder.Services.AddScoped<IInnogotchiRepository, InnogotchiRepository>();
+builder.Services.AddScoped<IAvatarRepository, AvatarRepository>();
 
 builder.Services.AddScoped<IUserAdapter, UserAdapter>();
 builder.Services.AddScoped<IFarmAdapter, FarmAdapter>();
 builder.Services.AddScoped<IInnogotchiAdapter, InnogotchiAdapter>();
+builder.Services.AddScoped<IAvatarAdapter, AvatarAdapter>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -12,8 +12,8 @@ using innogotchi_api.Data;
 namespace innogotchi_api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230501115509_Create")]
-    partial class Create
+    [Migration("20230504081430_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,23 @@ namespace innogotchi_api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("innogotchi_api.Models.Avatar", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Image")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Avatars");
+                });
 
             modelBuilder.Entity("innogotchi_api.Models.Collaboration", b =>
                 {
@@ -113,6 +130,9 @@ namespace innogotchi_api.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("AvatarId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FarmName")
                         .HasColumnType("nvarchar(450)");
 
@@ -129,6 +149,8 @@ namespace innogotchi_api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Email");
+
+                    b.HasIndex("AvatarId");
 
                     b.HasIndex("FarmName");
 
@@ -170,9 +192,15 @@ namespace innogotchi_api.Migrations
 
             modelBuilder.Entity("innogotchi_api.Models.User", b =>
                 {
+                    b.HasOne("innogotchi_api.Models.Avatar", "Avatar")
+                        .WithMany()
+                        .HasForeignKey("AvatarId");
+
                     b.HasOne("innogotchi_api.Models.Farm", "Farm")
                         .WithMany()
                         .HasForeignKey("FarmName");
+
+                    b.Navigation("Avatar");
 
                     b.Navigation("Farm");
                 });

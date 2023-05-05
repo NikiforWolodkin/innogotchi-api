@@ -3,6 +3,7 @@ using innogotchi_api.Helpers;
 using innogotchi_api.Interfaces;
 using innogotchi_api.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace innogotchi_api.Repositories
 {
@@ -88,7 +89,7 @@ namespace innogotchi_api.Repositories
                 return false;
             }
 
-            if (quenchingTimespan < TimeConverter.DEAD_QUENCHING_THRESHOLD)
+            if (quenchingTimespan > feedingTimespan)
             {
                 innogotchi.DeathDate = lastQuenchingTime
                     .AddDays(TimeConverter.DEAD_QUENCHING_THRESHOLD / TimeConverter.INNOGOTCHI_TIME_MODIFIER);
@@ -106,6 +107,16 @@ namespace innogotchi_api.Repositories
 
         public int GetInnogotchiAge(Innogotchi innogotchi)
         {
+            if (IsInnogotchiDead(innogotchi))
+            {
+                DateTime deathDate = _context.Innogotchis
+                    .Where(i => i.Name == innogotchi.Name)
+                    .FirstOrDefault()
+                    .CreationDate;
+
+                return TimeConverter.ConvertToInnogotchiTime(DateTime.Now - deathDate);
+            }
+
             DateTime creationDate = _context.Innogotchis
                 .Where(i => i.Name == innogotchi.Name)
                 .FirstOrDefault()
@@ -165,11 +176,11 @@ namespace innogotchi_api.Repositories
             
             switch (feedingTimespan)
             {
-                case < TimeConverter.FULL_FEEDING_THRESHOLD:
-                    return "FULL";
                 case < TimeConverter.NORMAL_FEEDING_THRESHOLD:
-                    return "NORMAL";
+                    return "FULL";
                 case < TimeConverter.HUNGER_FEEDING_THRESHOLD:
+                    return "NORMAL";
+                case < TimeConverter.DEAD_FEEDING_THRESHOLD:
                     return "HUNGRY";
                 default:
                     return "DEAD";
@@ -189,11 +200,11 @@ namespace innogotchi_api.Repositories
 
             switch (quenchingTimespan)
             {
-                case < TimeConverter.FULL_QUENCHING_THRESHOLD:
-                    return "FULL";
                 case < TimeConverter.NORMAL_QUENCHING_THRESHOLD:
-                    return "NORMAL";
+                    return "FULL";
                 case < TimeConverter.HUNGER_QUENCHING_THRESHOLD:
+                    return "NORMAL";
+                case < TimeConverter.DEAD_QUENCHING_THRESHOLD:
                     return "THIRSTY";
                 default:
                     return "DEAD";
@@ -205,6 +216,13 @@ namespace innogotchi_api.Repositories
             IList<FeedingAndQuenching> feedingsAndQuenchings = innogotchi.FeedingAndQuenchings
                 .OrderByDescending(f => f.Id)
                 .ToList();
+
+            if (innogotchi.FeedingAndQuenchings.Count > 1)
+            {
+                feedingsAndQuenchings = feedingsAndQuenchings
+                    .Take(innogotchi.FeedingAndQuenchings.Count - 1)
+                    .ToList();
+            }
 
             DateTime lastFeedingTime = feedingsAndQuenchings.First().FeedingTime;
 
@@ -222,6 +240,13 @@ namespace innogotchi_api.Repositories
             IList<FeedingAndQuenching> feedingsAndQuenchings = innogotchi.FeedingAndQuenchings
                 .OrderByDescending(f => f.Id)
                 .ToList();
+
+            if (innogotchi.FeedingAndQuenchings.Count > 1)
+            {
+                feedingsAndQuenchings = feedingsAndQuenchings
+                    .Take(innogotchi.FeedingAndQuenchings.Count - 1)
+                    .ToList();
+            }
 
             DateTime lastQuenchingTime = feedingsAndQuenchings.First().QuenchingTime;
 
