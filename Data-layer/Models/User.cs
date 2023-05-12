@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Data_layer.Models
+namespace DataLayer.Models
 {
     [Index(nameof(Email), IsUnique = true)]
     public class User

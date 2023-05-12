@@ -1,11 +1,11 @@
-﻿using Data_layer.Models;
+﻿using DataLayer.Models;
 
-namespace Data_layer.Interfaces
+namespace DataLayer.Interfaces
 {
     public interface IAvatarRepository
     {
-        Task<ICollection<Avatar>> GetAvatars();
-        Task<Avatar> GetAvatar(Guid id);
+        Task<ICollection<Avatar>> GetAvatarsAsync();
+        Task<Avatar> GetAvatarAsync(Guid id);
         Avatar AddAvatar(Avatar avatar, User user);
     }
 }

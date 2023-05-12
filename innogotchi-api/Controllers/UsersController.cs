@@ -1,108 +1,61 @@
-﻿using AutoMapper;
-using innogotchi_api.Dtos;
+﻿using Azure.Core;
+using BusinessLayer.Interfaces;
+using BusinessLayer.RequestDtos;
+using BusinessLayer.ResponseDtos;
+using FluentValidation;
 using innogotchi_api.Helpers;
-using innogotchi_api.Interfaces;
-using innogotchi_api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.OpenApi.Extensions;
+using ServiceLayer.Dtos;
+using ServiceLayer.Interfaces;
+using ServiceLayer.RequestDtos;
 
-namespace innogotchi_api.Controllers
+namespace ClientLayer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : Controller
     {
-        private readonly IUserAdapter _userAdapter;
+        private readonly IUserService _userService;
+        private readonly IFarmService _farmService;
+        private readonly IValidator<UserSignupDto> _signupValidator;
 
-        public UsersController(IUserAdapter userAdapter)
+        public UsersController(IUserService userService, IFarmService farmService, IValidator<UserSignupDto> signupValidator)
         {
-            _userAdapter = userAdapter;
+            _userService = userService;
+            _farmService = farmService;
+            _signupValidator = signupValidator;
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(ICollection<UserResponseDto>))]
-        public IActionResult GetUsers()
+        [ProducesResponseType(200, Type = typeof(ICollection<UserDto>))]
+        public async Task<IActionResult> GetUsersAsync()
         {
-            var users = _userAdapter.GetUsers();
-
-            return Ok(users);
+            return Ok(await _userService.GetUsersAsync());
         }
 
-        [HttpGet("{email}")]
-        [ProducesResponseType(200, Type = typeof(UserResponseDto))]
-        public IActionResult GetUser(string email)
+        [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
+        public async Task<IActionResult> GetUserAsync(Guid id)
         {
-            if (!_userAdapter.UserExists(email))
-            {
-                return NotFound("User not found.");
-            }
-
-            var user = _userAdapter.GetUser(email);
-
-            return Ok(user);
+            return Ok(await _userService.GetUserAsync(id));
         }
 
-        [HttpGet("me"), Authorize]
-        [ProducesResponseType(200, Type = typeof(UserResponseDto))]
-        public IActionResult GetUser()
+        [HttpPost]
+        [ProducesResponseType(201, Type = typeof(Guid))]
+        public async Task<IActionResult> AddUserAsync(UserSignupDto request)
         {
-            var email = JwtClaims.GetEmail((ClaimsIdentity)User.Identity);
+            var results = await _signupValidator.ValidateAsync(request);
 
-            if (!_userAdapter.UserExists(email))
+            if (!results.IsValid)
             {
-                return NotFound("User not found.");
+                return BadRequest(results.Errors.Select(err => new { Error = err.ErrorMessage }));
             }
 
-            var user = _userAdapter.GetUser(email);
+            var userId = _userService.AddUser(request);
 
-            return Ok(user);
-        }
-
-        [HttpPut("me"), Authorize]
-        [ProducesResponseType(200, Type = typeof(UserResponseDto))]
-        public IActionResult UpdateUser(UserRequestDto request)
-        {
-            var email = JwtClaims.GetEmail((ClaimsIdentity)User.Identity);
-
-            if (!_userAdapter.UserExists(email))
-            {
-                return NotFound("User not found.");
-            }
-
-            if (request.OldPassword is not null)
-            {
-                if (!_userAdapter.ValidateUserPassword(email, request.OldPassword))
-                {
-                    return BadRequest("Password is incorrect.");
-                }
-            }
-            else
-            {
-                request.Password = null;
-            }
-
-            request.Email = email;
-
-            var user = _userAdapter.UpdateUser(request);
-
-            return Ok(user);
-        }
-
-        [HttpDelete("me"), Authorize]
-        [ProducesResponseType(204)]
-        public IActionResult DeleteUser()
-        {
-            var email = JwtClaims.GetEmail((ClaimsIdentity)User.Identity);
-
-            if (!_userAdapter.UserExists(email))
-            {
-                return NotFound("User not found.");
-            }
-
-            _userAdapter.DeleteUser(email);
-
-            return NoContent();
+            return Created($"api/users/{userId}", userId);
         }
     }
 }

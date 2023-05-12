@@ -1,14 +1,14 @@
-﻿using Data_layer.Models;
+﻿using DataLayer.Models;
 
-namespace Data_layer.Interfaces
+namespace DataLayer.Interfaces
 {
     public interface ICollaborationRepository
     {
-        Task<ICollection<Collaboration>> GetCollaborations();
-        Task<ICollection<Collaboration>> GetCollaborations(string farmName);
-        Task<ICollection<Collaboration>> GetCollaborations(Guid userId);
-        Task<Collaboration> GetCollaboration(Guid userId, string farmName);
-        Task<Collaboration> AddCollaboration(Collaboration collaboration);
+        Task<ICollection<Collaboration>> GetCollaborationsAsync();
+        Task<ICollection<Collaboration>> GetCollaborationsAsync(string farmName);
+        Task<ICollection<Collaboration>> GetCollaborationsAsync(Guid userId);
+        Task<Collaboration> GetCollaborationAsync(Guid userId, string farmName);
+        Task<Collaboration> AddCollaborationAsync(Collaboration collaboration);
         void DeleteCollaboration(Collaboration collaboration);
         void UpdateDatabase();
     }

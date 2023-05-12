@@ -1,9 +1,9 @@
-﻿using Data_layer.Data;
-using Data_layer.Interfaces;
-using Data_layer.Models;
+﻿using DataLayer.Data;
+using DataLayer.Interfaces;
+using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data_layer.Repositories
+namespace DataLayer.Repositories
 {
     public class InnogotchiRepository : IInnogotchiRepository
     {
@@ -43,17 +43,17 @@ namespace Data_layer.Repositories
             _context.SaveChangesAsync();
         }
 
-        public async Task<Innogotchi> GetInnogotchi(string name)
+        public async Task<Innogotchi> GetInnogotchiAsync(string name)
         {
             return await _context.Innogotchis.FindAsync(name);
         }
 
-        public async Task<ICollection<Innogotchi>> GetInnogotchis()
+        public async Task<ICollection<Innogotchi>> GetInnogotchisAsync()
         {
             return await _context.Innogotchis.ToListAsync();
         }
 
-        public async Task<ICollection<Innogotchi>> GetInnogotchis(string farmName)
+        public async Task<ICollection<Innogotchi>> GetInnogotchisAsync(string farmName)
         {
             var farm = await _context.Farms
                 .Include(f => f.Innogotchis)

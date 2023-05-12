@@ -1,9 +1,9 @@
-﻿using Data_layer.Data;
-using Data_layer.Interfaces;
-using Data_layer.Models;
+﻿using DataLayer.Data;
+using DataLayer.Interfaces;
+using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data_layer.Repositories
+namespace DataLayer.Repositories
 {
     public class UserRepository : IUserRepository
     {
@@ -30,12 +30,17 @@ namespace Data_layer.Repositories
             _context.SaveChangesAsync();
         }
 
-        public async Task<User> GetUser(Guid id)
+        public async Task<User> GetUserAsync(Guid id)
         {
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<ICollection<User>> GetUsers()
+        public async Task<User> GetUserAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+        }
+
+        public async Task<ICollection<User>> GetUsersAsync()
         {
             return await _context.Users.ToListAsync();
         }

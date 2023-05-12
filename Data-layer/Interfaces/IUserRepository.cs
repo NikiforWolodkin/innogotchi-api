@@ -1,11 +1,12 @@
-﻿using Data_layer.Models;
+﻿using DataLayer.Models;
 
-namespace Data_layer.Interfaces
+namespace DataLayer.Interfaces
 {
     public interface IUserRepository
     {
-        Task<ICollection<User>> GetUsers();
-        Task<User> GetUser(Guid id);
+        Task<ICollection<User>> GetUsersAsync();
+        Task<User> GetUserAsync(Guid id);
+        Task<User> GetUserAsync(string email);
         User AddUser(User user);
         void DeleteUser(User user);
         void UpdateDatabase();

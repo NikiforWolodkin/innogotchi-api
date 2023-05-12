@@ -1,4 +1,6 @@
-﻿namespace Data_layer.Models
+﻿using DataLayer.Enums;
+
+namespace DataLayer.Models
 {
     public class Collaboration
     {
@@ -6,6 +8,6 @@
         public Guid UserId { get; set; }
         public Farm Farm { get; set; }
         public User User { get; set; }
-        public string Status { get; set; }
+        public Status Status { get; set; }
     }
 }

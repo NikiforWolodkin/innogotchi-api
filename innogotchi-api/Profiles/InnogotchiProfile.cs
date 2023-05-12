@@ -1,14 +1,23 @@
 ﻿using AutoMapper;
-using innogotchi_api.Dtos;
-using innogotchi_api.Models;
+using BusinessLayer.ResponseDtos;
+using DataLayer.Models;
+using ServiceLayer.Dtos;
 
-namespace innogotchi_api.Profiles
+namespace ClientLayer.Profiles
 {
     public class InnogotchiProfile : Profile
     {
-        public InnogotchiProfile() 
+        public InnogotchiProfile()
         {
-            CreateMap<Innogotchi, InnogotchiResponseDto>();
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.AvatarId, opt => opt.MapFrom(
+                    src => src.Avatar != null ? src.Avatar.Id : (Guid?)null))
+                .ForMember(dest => dest.FarmName, opt => opt.MapFrom(
+                    src => src.Farm != null ? src.Farm.Name: null));
+
+            CreateMap<Farm, FarmDto>();
+
+            CreateMap<Innogotchi, InnogotchiDto>();
         }
     }
 }

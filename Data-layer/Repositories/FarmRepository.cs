@@ -1,9 +1,9 @@
-﻿using Data_layer.Data;
-using Data_layer.Interfaces;
-using Data_layer.Models;
+﻿using DataLayer.Data;
+using DataLayer.Interfaces;
+using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data_layer.Repositories
+namespace DataLayer.Repositories
 {
     public class FarmRepository : IFarmRepository
     {
@@ -32,17 +32,17 @@ namespace Data_layer.Repositories
             _context.SaveChangesAsync();
         }
 
-        public async Task<Farm> GetFarm(string name)
+        public async Task<Farm> GetFarmAsync(string name)
         {
             return await _context.Farms.FindAsync(name);
         }
 
-        public async Task<ICollection<Farm>> GetFarms()
+        public async Task<ICollection<Farm>> GetFarmsAsync()
         {
             return await _context.Farms.ToListAsync();
         }
 
-        public async Task<ICollection<Farm>> GetFarms(Guid collaboratorId)
+        public async Task<ICollection<Farm>> GetFarmsAsync(Guid collaboratorId)
         {
             return await _context.Collaborations
                 .Include(c => c.Farm)

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Data_layer.Models
+namespace DataLayer.Models
 {
     public class Farm
     {

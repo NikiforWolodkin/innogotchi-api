@@ -1,14 +1,17 @@
+using BusinessLayer.Interfaces;
+using BusinessLayer.Services;
+using ClientLayer.Middleware;
+using DataLayer.Data;
+using DataLayer.Interfaces;
+using DataLayer.Repositories;
 using FluentValidation;
-using innogotchi_api.Adapters;
-using innogotchi_api.Data;
-using innogotchi_api.Dtos;
-using innogotchi_api.Interfaces;
-using innogotchi_api.Repositories;
-using innogotchi_api.Services;
 using innogotchi_api.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ServiceLayer.Interfaces;
+using ServiceLayer.RequestDtos;
+using ServiceLayer.Services;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
@@ -33,17 +36,17 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddScoped<IValidator<UserRequestDto>, UserValidator>();
-
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAvatarRepository, AvatarRepository>();
+builder.Services.AddScoped<ICollaborationRepository, CollaborationRepository>();
 builder.Services.AddScoped<IFarmRepository, FarmRepository>();
 builder.Services.AddScoped<IInnogotchiRepository, InnogotchiRepository>();
-builder.Services.AddScoped<IAvatarRepository, AvatarRepository>();
 
-builder.Services.AddScoped<IUserAdapter, UserAdapter>();
-builder.Services.AddScoped<IFarmAdapter, FarmAdapter>();
-builder.Services.AddScoped<IInnogotchiAdapter, InnogotchiAdapter>();
-builder.Services.AddScoped<IAvatarAdapter, AvatarAdapter>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IFarmService, FarmService>();
+builder.Services.AddScoped<IInnogotchiService, InnogotchiService>();
+
+builder.Services.AddScoped<IValidator<UserSignupDto>, UserSignupValidator>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -61,7 +64,10 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        builder => builder.MigrationsAssembly("Api")
+    );
 });
 
 var app = builder.Build();
@@ -72,6 +78,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseErrorHandler();
 
 app.UseHttpsRedirection();
 

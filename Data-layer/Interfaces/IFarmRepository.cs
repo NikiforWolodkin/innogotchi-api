@@ -1,12 +1,12 @@
-﻿using Data_layer.Models;
+﻿using DataLayer.Models;
 
-namespace Data_layer.Interfaces
+namespace DataLayer.Interfaces
 {
     public interface IFarmRepository
     {
-        Task<ICollection<Farm>> GetFarms();
-        Task<ICollection<Farm>> GetFarms(Guid collaboratorId);
-        Task<Farm> GetFarm(string name);
+        Task<ICollection<Farm>> GetFarmsAsync();
+        Task<ICollection<Farm>> GetFarmsAsync(Guid collaboratorId);
+        Task<Farm> GetFarmAsync(string name);
         Farm AddFarm(Farm farm, User user);
         void DeleteFarm(Farm farm);
         void UpdateDatabase();

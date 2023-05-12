@@ -1,10 +1,10 @@
 ﻿
-using Data_layer.Data;
-using Data_layer.Interfaces;
-using Data_layer.Models;
+using DataLayer.Data;
+using DataLayer.Interfaces;
+using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data_layer.Repositories
+namespace DataLayer.Repositories
 {
     public class AvatarRepository : IAvatarRepository
     {
@@ -26,12 +26,12 @@ namespace Data_layer.Repositories
             return avatar;
         }
 
-        public async Task<Avatar> GetAvatar(Guid id)
+        public async Task<Avatar> GetAvatarAsync(Guid id)
         {
             return await _context.Avatars.FindAsync(id);
         }
 
-        public async Task<ICollection<Avatar>> GetAvatars()
+        public async Task<ICollection<Avatar>> GetAvatarsAsync()
         {
             return await _context.Avatars.ToListAsync();
         }
