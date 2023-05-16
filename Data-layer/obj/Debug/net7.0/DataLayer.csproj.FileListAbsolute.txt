@@ -1,0 +1,14 @@
+C:\Work\innowise\Data-layer\bin\Debug\net7.0\DataLayer.deps.json
+C:\Work\innowise\Data-layer\bin\Debug\net7.0\DataLayer.runtimeconfig.json
+C:\Work\innowise\Data-layer\bin\Debug\net7.0\DataLayer.dll
+C:\Work\innowise\Data-layer\bin\Debug\net7.0\DataLayer.pdb
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.csproj.AssemblyReference.cache
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.AssemblyInfoInputs.cache
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.AssemblyInfo.cs
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.csproj.CoreCompileInputs.cache
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.dll
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\refint\DataLayer.dll
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.pdb
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\DataLayer.genruntimeconfig.cache
+C:\Work\innowise\Data-layer\obj\Debug\net7.0\ref\DataLayer.dll

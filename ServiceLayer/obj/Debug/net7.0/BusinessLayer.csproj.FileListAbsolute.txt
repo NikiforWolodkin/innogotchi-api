@@ -1,0 +1,15 @@
+C:\Work\innowise\ServiceLayer\bin\Debug\net7.0\BusinessLayer.deps.json
+C:\Work\innowise\ServiceLayer\bin\Debug\net7.0\BusinessLayer.dll
+C:\Work\innowise\ServiceLayer\bin\Debug\net7.0\BusinessLayer.pdb
+C:\Work\innowise\ServiceLayer\bin\Debug\net7.0\DataLayer.dll
+C:\Work\innowise\ServiceLayer\bin\Debug\net7.0\DataLayer.pdb
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.csproj.AssemblyReference.cache
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.AssemblyInfoInputs.cache
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.AssemblyInfo.cs
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.csproj.CoreCompileInputs.cache
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.csproj.CopyComplete
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.dll
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\refint\BusinessLayer.dll
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\BusinessLayer.pdb
+C:\Work\innowise\ServiceLayer\obj\Debug\net7.0\ref\BusinessLayer.dll
