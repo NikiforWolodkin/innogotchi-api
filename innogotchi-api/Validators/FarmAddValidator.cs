@@ -1,7 +1,7 @@
 ﻿using BusinessLayer.RequestDtos;
 using FluentValidation;
 
-namespace innogotchi_api.Validators
+namespace InnogotchiApi.Validators
 {
     public class FarmAddValidator : AbstractValidator<FarmAddDto>
     {

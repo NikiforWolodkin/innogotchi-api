@@ -1,4 +1,5 @@
 ﻿using DataLayer.Data;
+using DataLayer.Exceptions;
 using DataLayer.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,38 +17,82 @@ namespace DataLayer.Repositories
 
         public User AddUser(User user)
         {
-            _context.Users.Add(user);
+            try
+            {
+                _context.Users.Add(user);
 
-            _context.SaveChanges();
+                _context.SaveChanges();
 
-            return user;
+                return user;
+            }
+            catch
+            {
+                throw new DbAddException("Can't add user.");
+            }
         }
 
-        public void DeleteUser(User user)
+        public async Task DeleteUserAsync(User user)
         {
-            _context.Users.Remove(user);
+            try
+            {
+                _context.Users.Remove(user);
 
-            _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new DbDeleteException("Can't delete user.");
+            }
         }
 
         public async Task<User> GetUserAsync(Guid id)
         {
-            return await _context.Users.FindAsync(id);
+            try
+            {
+                return await _context.Users
+                    .Include(user => user.Farm)
+                    .Include(user => user.Avatar)
+                    .FirstAsync(user => user.Id == id);
+            }
+            catch
+            {
+                throw new NotFoundException("User not found.");
+            }
         }
 
         public async Task<User> GetUserAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+            try
+            {
+                return await _context.Users
+                    .Include(user => user.Farm)
+                    .Include(user => user.Avatar)
+                    .FirstAsync(user => user.Email == email);
+            }
+            catch
+            {
+                throw new NotFoundException("User not found.");
+            } 
         }
 
         public async Task<ICollection<User>> GetUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(user => user.Farm)
+                .Include(user => user.Avatar)
+                .ToListAsync();
         }
 
-        public void UpdateDatabase()
+        public async Task UpdateDatabaseAsync()
         {
-            _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new DbAddException("Can't update changes.");
+            }
         }
     }
 }

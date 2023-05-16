@@ -1,4 +1,4 @@
-﻿using ServiceLayer.Exceptions;
+﻿using DataLayer.Exceptions;
 using System.Net;
 using System.Text.Json;
 
@@ -23,6 +23,14 @@ namespace ClientLayer.Middleware
             {
                 await HandleNotFound(context, ex);
             }
+            catch (DbAddException ex)
+            {
+                await HandleDbAdd(context, ex);
+            }
+            catch (DbDeleteException ex)
+            {
+                await HandleDbDelete(context, ex);
+            }
             catch (Exception ex)
             {
                 await HandleUnexpectedError(context, ex);
@@ -34,7 +42,27 @@ namespace ClientLayer.Middleware
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
             context.Response.ContentType = System.Net.Mime.MediaTypeNames.Application.Json;
 
-            string result = JsonSerializer.Serialize( new { error = ex.Message } );
+            string result = JsonSerializer.Serialize(new { error = ex.Message });
+
+            return context.Response.WriteAsync(result);
+        }
+
+        public Task HandleDbAdd(HttpContext context, DbAddException ex)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.ContentType = System.Net.Mime.MediaTypeNames.Application.Json;
+
+            string result = JsonSerializer.Serialize(new { error = ex.Message });
+
+            return context.Response.WriteAsync(result);
+        }
+
+        public Task HandleDbDelete(HttpContext context, DbDeleteException ex)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.ContentType = System.Net.Mime.MediaTypeNames.Application.Json;
+
+            string result = JsonSerializer.Serialize(new { error = ex.Message });
 
             return context.Response.WriteAsync(result);
         }
@@ -44,7 +72,7 @@ namespace ClientLayer.Middleware
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = System.Net.Mime.MediaTypeNames.Application.Json;
 
-            string result = JsonSerializer.Serialize( new { error = ex.Message } );
+            string result = JsonSerializer.Serialize(new { error = ex.Message });
 
             return context.Response.WriteAsync(result);
         }

@@ -1,4 +1,4 @@
-﻿namespace ServiceLayer.RequestDtos
+﻿namespace DataLayer.RequestDtos
 {
     public class UserSignupDto
     {

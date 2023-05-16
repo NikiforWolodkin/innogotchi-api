@@ -1,4 +1,5 @@
-﻿using DataLayer.Models;
+﻿using DataLayer.Enums;
+using DataLayer.Models;
 
 namespace DataLayer.Interfaces
 {
@@ -7,9 +8,11 @@ namespace DataLayer.Interfaces
         Task<ICollection<Collaboration>> GetCollaborationsAsync();
         Task<ICollection<Collaboration>> GetCollaborationsAsync(string farmName);
         Task<ICollection<Collaboration>> GetCollaborationsAsync(Guid userId);
+        Task<ICollection<Collaboration>> GetCollaborationsAsync(string farmName, CollaborationStatus status);
+        Task<ICollection<Collaboration>> GetCollaborationsAsync(Guid userId, CollaborationStatus status);
         Task<Collaboration> GetCollaborationAsync(Guid userId, string farmName);
         Task<Collaboration> AddCollaborationAsync(Collaboration collaboration);
-        void DeleteCollaboration(Collaboration collaboration);
-        void UpdateDatabase();
+        Task DeleteCollaborationAsync(Collaboration collaboration);
+        Task UpdateDatabaseAsync();
     }
 }

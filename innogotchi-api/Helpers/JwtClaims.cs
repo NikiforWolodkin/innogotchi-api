@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
 
-namespace innogotchi_api.Helpers
+namespace InnogotchiApi.Helpers
 {
     public static class JwtClaims
     {

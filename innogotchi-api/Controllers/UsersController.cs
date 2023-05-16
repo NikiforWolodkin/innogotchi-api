@@ -3,13 +3,13 @@ using BusinessLayer.Interfaces;
 using BusinessLayer.RequestDtos;
 using BusinessLayer.ResponseDtos;
 using FluentValidation;
-using innogotchi_api.Helpers;
+using InnogotchiApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Extensions;
-using ServiceLayer.Dtos;
-using ServiceLayer.Interfaces;
-using ServiceLayer.RequestDtos;
+using DataLayer.Dtos;
+using DataLayer.Interfaces;
+using DataLayer.RequestDtos;
 
 namespace ClientLayer.Controllers
 {

@@ -8,7 +8,7 @@ namespace DataLayer.Interfaces
         Task<User> GetUserAsync(Guid id);
         Task<User> GetUserAsync(string email);
         User AddUser(User user);
-        void DeleteUser(User user);
-        void UpdateDatabase();
+        Task DeleteUserAsync(User user);
+        Task UpdateDatabaseAsync();
     }
 }

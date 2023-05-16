@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using ServiceLayer.RequestDtos;
+using DataLayer.RequestDtos;
 
-namespace innogotchi_api.Validators
+namespace InnogotchiApi.Validators
 {
     public class UserSignupValidator : AbstractValidator<UserSignupDto>
     {

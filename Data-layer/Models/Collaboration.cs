@@ -8,6 +8,6 @@ namespace DataLayer.Models
         public Guid UserId { get; set; }
         public Farm Farm { get; set; }
         public User User { get; set; }
-        public Status Status { get; set; }
+        public CollaborationStatus Status { get; set; }
     }
 }

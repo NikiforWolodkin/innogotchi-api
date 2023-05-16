@@ -14,6 +14,7 @@ namespace BusinessLayer.Interfaces
         Task<ICollection<FarmDto>> GetFarmsAsync(Guid collaboratorId);
         Task<FarmDto> GetFarmAsync(string name);
         Task<string> AddFarmAsync(FarmAddDto request, Guid userId);
-        void DeleteFarmAsync(string name);
+        Task DeleteFarmAsync(string name);
+        Task UpdateFarmInnogotchisAsync(string name);
     }
 }

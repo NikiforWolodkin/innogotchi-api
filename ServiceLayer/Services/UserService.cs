@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using DataLayer.Interfaces;
 using DataLayer.Models;
-using ServiceLayer.Dtos;
-using ServiceLayer.Exceptions;
-using ServiceLayer.Interfaces;
-using ServiceLayer.RequestDtos;
+using DataLayer.Dtos;
+using DataLayer.RequestDtos;
+using BusinessLayer.RequestDtos;
 
-namespace ServiceLayer.Services
+namespace DataLayer.Services
 {
     public class UserService : IUserService
     {
@@ -36,16 +35,14 @@ namespace ServiceLayer.Services
 
         public async Task<UserDto> GetUserAsync(Guid id)
         {
-            User user = await _userRepository.GetUserAsync(id)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _userRepository.GetUserAsync(id);
 
             return _mapper.Map<UserDto>(user);
         }
 
         public async Task<UserDto> GetUserAsync(string email)
         {
-            User user = await _userRepository.GetUserAsync(email)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _userRepository.GetUserAsync(email);
 
             return _mapper.Map<UserDto>(user);
         }
@@ -57,12 +54,34 @@ namespace ServiceLayer.Services
             return _mapper.Map<ICollection<UserDto>>(users);
         }
 
+        public async Task<UserDto> UpdateUserProfileAsync(Guid id, UserUpdateProfileDto request)
+        {
+            User user = await _userRepository.GetUserAsync(id);
+
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+
+            await _userRepository.UpdateDatabaseAsync();
+
+            return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<UserDto> UpdateUserPasswordAsync(Guid id, string password)
+        {
+            User user = await _userRepository.GetUserAsync(id);
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+
+            await _userRepository.UpdateDatabaseAsync();
+
+            return _mapper.Map<UserDto>(user);
+        }
+
         public async Task<bool> ValidatePassword(Guid id, string password)
         {
-            User user = await _userRepository.GetUserAsync(id)
-                ?? throw new NotFoundException("User not found.");
+            User user = await _userRepository.GetUserAsync(id);
 
-            return BCrypt.Net.BCrypt.Verify(user.PasswordHash, password);
+            return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
         }
     }
 }

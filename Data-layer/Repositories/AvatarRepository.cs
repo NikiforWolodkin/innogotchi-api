@@ -1,4 +1,4 @@
-﻿
+﻿using DataLayer.Exceptions;
 using DataLayer.Data;
 using DataLayer.Interfaces;
 using DataLayer.Models;
@@ -17,23 +17,41 @@ namespace DataLayer.Repositories
 
         public Avatar AddAvatar(Avatar avatar, User user)
         {
-            user.Avatar = avatar;
+            try
+            {
+                user.Avatar = avatar;
 
-            _context.Avatars.Add(avatar);
+                _context.Avatars.Add(avatar);
 
-            _context.SaveChanges();
+                _context.SaveChanges();
 
-            return avatar;
+                return avatar;
+            }
+            catch
+            {
+                throw new DbAddException("Can't add avatar.");
+            }
         }
 
         public async Task<Avatar> GetAvatarAsync(Guid id)
         {
-            return await _context.Avatars.FindAsync(id);
+            try
+            {
+                return await _context.Avatars.FirstAsync(avatar => avatar.Id == id);
+            }
+            catch
+            {
+                throw new NotFoundException("Avatar not found.");
+            }
         }
 
         public async Task<ICollection<Avatar>> GetAvatarsAsync()
         {
             return await _context.Avatars.ToListAsync();
+
+            //return await _context.Avatars
+            //    .FromSql($"SELECT * FROM dbo.Avatars")
+            //    .ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DataLayer.Data;
+﻿using DataLayer.Exceptions;
+using DataLayer.Data;
 using DataLayer.Interfaces;
 using DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,55 +17,102 @@ namespace DataLayer.Repositories
 
         public Innogotchi AddInnogotchi(Innogotchi innogotchi, Farm farm)
         {
-            farm.Innogotchis.Add(innogotchi);
+            try
+            {
+                farm.Innogotchis.Add(innogotchi);
 
-            _context.Innogotchis.Add(innogotchi);
+                _context.Innogotchis.Add(innogotchi);
 
-            _context.SaveChanges();
+                _context.SaveChanges();
 
-            return innogotchi;
+                return innogotchi;
+            }
+            catch
+            {
+                throw new DbAddException("Can't add innogotchi");
+            }
         }
 
         public FeedingAndQuenching AddInnogotchiFeedingAndQuenching(Innogotchi innogotchi, FeedingAndQuenching feedingAndQuenching)
         {
-            innogotchi.FeedingAndQuenchings.Add(feedingAndQuenching);
+            try
+            {
+                innogotchi.FeedingAndQuenchings.Add(feedingAndQuenching);
 
-            _context.FeedingsAndQuenchings.Add(feedingAndQuenching);
+                _context.FeedingsAndQuenchings.Add(feedingAndQuenching);
 
-            _context.SaveChanges();
+                _context.SaveChanges();
 
-            return feedingAndQuenching;
+                return feedingAndQuenching;
+            }
+            catch
+            {
+                throw new DbAddException("Can't feed or quench innogotchi");
+            }
         }
 
-        public void DeleteInnogotchi(Innogotchi innogotchi)
+        public async Task DeleteInnogotchiAsync(Innogotchi innogotchi)
         {
-            _context.Innogotchis.Remove(innogotchi);
+            try
+            {
+                _context.Innogotchis.Remove(innogotchi);
 
-            _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new DbDeleteException("Can't delete innogotchi.");
+            }
         }
 
         public async Task<Innogotchi> GetInnogotchiAsync(string name)
         {
-            return await _context.Innogotchis.FindAsync(name);
+            try
+            {
+                return await _context.Innogotchis
+                    .Include(inno => inno.FeedingAndQuenchings)
+                    .FirstAsync(inno => inno.Name == name);
+            }
+            catch
+            {
+                throw new NotFoundException("Innogotchi not found.");
+            }
         }
 
         public async Task<ICollection<Innogotchi>> GetInnogotchisAsync()
         {
-            return await _context.Innogotchis.ToListAsync();
+            return await _context.Innogotchis
+                .Include(inno => inno.FeedingAndQuenchings)
+                .ToListAsync();
         }
 
         public async Task<ICollection<Innogotchi>> GetInnogotchisAsync(string farmName)
         {
-            var farm = await _context.Farms
-                .Include(f => f.Innogotchis)
-                .FirstOrDefaultAsync(f => f.Name == farmName);
-            
-            return farm?.Innogotchis;
+            try
+            {
+                var farm = await _context.Farms
+                    .Include(farm => farm.Innogotchis)
+                    .ThenInclude(inno => inno.FeedingAndQuenchings)
+                    .FirstAsync(farm => farm.Name == farmName);
+
+                return farm.Innogotchis;
+            }
+            catch
+            {
+                throw new NotFoundException("Farm not found.");
+            }
         }
 
-        public void UpdateDatabase()
+        public async Task UpdateDatabaseAsync()
         {
-            _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new DbAddException("Can't update changes.");
+            }
         }
     }
 }

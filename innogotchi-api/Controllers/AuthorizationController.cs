@@ -1,14 +1,12 @@
 ﻿using BusinessLayer.RequestDtos;
-using DataLayer.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using ServiceLayer.Interfaces;
+using DataLayer.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace innogotchi_api.Controllers
+namespace InnogotchiApi.Controllers
 {
     [ApiController]
     public class AuthorizationController : Controller
@@ -22,7 +20,7 @@ namespace innogotchi_api.Controllers
             _userService = userService;
         }
 
-        [HttpGet("api/authorize")]
+        [HttpPost("api/authorize")]
         [ProducesResponseType(200, Type = typeof(string))]
         public async Task<IActionResult> AuthorizeUserAsync(UserLoginDto request)
         {
@@ -30,12 +28,12 @@ namespace innogotchi_api.Controllers
 
             if (!await _userService.ValidatePassword(user.Id, request.Password))
             {
-                return BadRequest(new { Error = "Incorrect password."});
+                return BadRequest(new { Error = "Incorrect password." });
             }
 
             var token = CreateToken(user.Id, request.Email, user.FirstName, user.LastName);
 
-            throw new NotImplementedException();
+            return Ok(new { token });
         }
 
         private string CreateToken(Guid id, string email, string firstName, string lastName)

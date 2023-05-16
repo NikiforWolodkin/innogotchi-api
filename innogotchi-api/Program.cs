@@ -1,19 +1,20 @@
 using BusinessLayer.Interfaces;
+using BusinessLayer.RequestDtos;
 using BusinessLayer.Services;
 using ClientLayer.Middleware;
 using DataLayer.Data;
 using DataLayer.Interfaces;
 using DataLayer.Repositories;
 using FluentValidation;
-using innogotchi_api.Validators;
+using InnogotchiApi.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using ServiceLayer.Interfaces;
-using ServiceLayer.RequestDtos;
-using ServiceLayer.Services;
+using DataLayer.RequestDtos;
+using DataLayer.Services;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using innogotchi_api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,8 +46,14 @@ builder.Services.AddScoped<IInnogotchiRepository, InnogotchiRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFarmService, FarmService>();
 builder.Services.AddScoped<IInnogotchiService, InnogotchiService>();
+builder.Services.AddScoped<ICollaborationService, CollaborationService>();
+builder.Services.AddScoped<IAvatarService, AvatarService>();    
 
 builder.Services.AddScoped<IValidator<UserSignupDto>, UserSignupValidator>();
+builder.Services.AddScoped<IValidator<FarmAddDto>, FarmAddValidator>();
+builder.Services.AddScoped<IValidator<InnogotchiAddDto>, InnogotchiAddValidator>();
+builder.Services.AddScoped<IValidator<UserUpdatePasswordDto>, UserUpdatePasswordValidator>();
+builder.Services.AddScoped<IValidator<UserUpdateProfileDto>, UserUpdateProfileValidator>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

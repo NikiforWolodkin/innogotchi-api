@@ -9,7 +9,7 @@ namespace DataLayer.Interfaces
         Task<Innogotchi> GetInnogotchiAsync(string name);
         Innogotchi AddInnogotchi(Innogotchi innogotchi, Farm farm);
         FeedingAndQuenching AddInnogotchiFeedingAndQuenching(Innogotchi innogotchi, FeedingAndQuenching feedingAndQuenching);
-        void DeleteInnogotchi(Innogotchi innogotchi);
-        void UpdateDatabase();
+        Task DeleteInnogotchiAsync(Innogotchi innogotchi);
+        Task UpdateDatabaseAsync();
     }
 }

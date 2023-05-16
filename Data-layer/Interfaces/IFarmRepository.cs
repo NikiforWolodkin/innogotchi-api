@@ -8,7 +8,7 @@ namespace DataLayer.Interfaces
         Task<ICollection<Farm>> GetFarmsAsync(Guid collaboratorId);
         Task<Farm> GetFarmAsync(string name);
         Farm AddFarm(Farm farm, User user);
-        void DeleteFarm(Farm farm);
-        void UpdateDatabase();
+        Task DeleteFarmAsync(Farm farm);
+        Task UpdateDatabaseAsync();
     }
 }

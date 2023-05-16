@@ -1,4 +1,4 @@
-﻿namespace ServiceLayer.Exceptions
+﻿namespace DataLayer.Exceptions
 {
     public class NotFoundException : Exception
     {

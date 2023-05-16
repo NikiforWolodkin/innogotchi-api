@@ -15,6 +15,8 @@ namespace DataLayer.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
             Database.EnsureCreated();
+
+            ChangeTracker.LazyLoadingEnabled = false;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
